@@ -13,17 +13,34 @@ export default function Contact() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSending(true);
-    // Simulate form submission (will connect to backend later)
-    setTimeout(() => {
-      setSending(false);
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setSending(true);
+
+  try {
+    const res = await fetch("https://formspree.io/f/mrbnwqja", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (res.ok) {
       setSent(true);
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ name: "", email: "", message: "" });
       setTimeout(() => setSent(false), 3000);
-    }, 1500);
-  };
+    } else {
+      alert("Failed to send message. Try again.");
+    }
+  } catch (err) {
+    alert("Something went wrong. Please try later.");
+  } finally {
+    setSending(false);
+  }
+};
+
 
   const copyEmail = () => {
     navigator.clipboard.writeText(personalInfo.email);
